@@ -1,5 +1,6 @@
 from DatabaseConnection import databaseConnection, cur
 
+
 def initializeDatabase():
     # Add all tables to database
     cur.execute("CREATE TABLE IF NOT EXISTS Trip ("

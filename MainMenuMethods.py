@@ -1,4 +1,6 @@
 from DatabaseConnection import databaseConnection, cur
+from ConvenienceFunctions import is_not_integer, make_ordinal, is_not_one_or_two
+
 
 def displaySchedule():
     startLocationName = input("Enter a start location: ")
@@ -9,16 +11,27 @@ def displaySchedule():
     SQL_Query = "SELECT T2.* " \
                 "FROM TripOffering T2 " \
                 "WHERE T2.Date =\'" + Date + "\' AND T2.TripNumber IN(SELECT T.TripNumber " \
-                                             "FROM Trip T " \
-                                             "WHERE T.StartLocationName =\'" + startLocationName + "\' " \
-                                                                                                   "AND T.DestinationName=\'" + DestinationName + "\');"
+                                                                     "FROM Trip T " \
+                                                                     "WHERE T.StartLocationName =\'" + startLocationName + "\' " \
+                                                                            "AND T.DestinationName=\'" + DestinationName + "\');"
     cur.execute(SQL_Query)
     output = cur.fetchall()
     for row in output:
         print(row)
 
+
 def displayStops():
-    print("Display stops")
+    TripNumber = input("Enter a Trip Number: ")
+    while is_not_integer(TripNumber):
+        TripNumber = input("Enter a Trip Number: ")
+    StopNumber = input("Enter a Stop Number: ")
+    while is_not_integer(TripNumber):
+        StopNumber = input("Enter a Stop Number: ")
+
+    SQL_Query = "SELECT * FROM TripStopInfo T WHERE T.TripNumber = " + TripNumber + " AND T.StopNumber = " + StopNumber
+    cur.execute(SQL_Query)
+    output = cur.fetchall()
+    print(output)
 
 
 def displayDriverSchedule():

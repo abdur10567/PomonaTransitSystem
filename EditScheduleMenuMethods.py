@@ -1,4 +1,5 @@
 from DatabaseConnection import databaseConnection, cur
+from ConvenienceFunctions import is_not_integer, make_ordinal, is_not_one_or_two
 
 def deleteTripOffering():
     TripNumber = input("Enter a Trip Number: ")
@@ -8,7 +9,7 @@ def deleteTripOffering():
     ScheduledStartTime = input("Enter the scheduled start time: ")
     ScheduledStartTime.lower()
     SQL_Delete = "DELETE FROM TripOffering " \
-                "WHERE TripNumber =" + TripNumber + " AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
+                 "WHERE TripNumber =" + TripNumber + " AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
     cur.execute(SQL_Delete)
     databaseConnection.commit()
 

@@ -1,7 +1,6 @@
 import re
 from consolemenu import *
 from consolemenu.items import *
-from ConvenienceFunctions import is_not_integer, make_ordinal, is_not_one_or_two
 from EditScheduleMenuMethods import deleteTripOffering, addTripOfferings, changeDriver, changeBus
 from MainMenuMethods import displaySchedule, displayStops, displayDriverSchedule, addDriver, addBus, deleteBus, insertActualTrip
 from DatabaseInitialization import initializeDatabase
