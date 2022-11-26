@@ -28,7 +28,7 @@ def displayStops():
     while is_not_integer(TripNumber):
         StopNumber = input("Enter a Stop Number: ")
 
-    SQL_Query = "SELECT * FROM TripStopInfo T WHERE T.TripNumber = " + TripNumber + " AND T.StopNumber = " + StopNumber
+    SQL_Query = "SELECT * FROM TripStopInfo T WHERE T.TripNumber = " + TripNumber + " AND T.StopNumber = " + StopNumber + ";"
     cur.execute(SQL_Query)
     output = cur.fetchall()
     print(output)
@@ -72,7 +72,13 @@ def addBus():
 
 
 def deleteBus():
-    print("Delete a bus")
+    BusID = input("Enter the BusID of the Bus to delete: ")
+    while is_not_integer(BusID):
+        BusID = input("Enter the BusID of the Bus to delete: ")
+
+    SQL_Delete = "DELETE FROM Bus WHERE BusID = " + BusID + ";"
+    cur.execute(SQL_Delete)
+    databaseConnection.commit()
 
 
 def insertActualTrip():
