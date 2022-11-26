@@ -99,12 +99,8 @@ def deleteTripOffering():
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
     ScheduledStartTime.lower()
-    SQL_Query = "SELECT T2.* " \
-                "FROM TripOffering T2 " \
-                "WHERE T2.Date =\'" + Date + "\' AND T2.TripNumber IN(SELECT T.TripNumber " \
-                                             "FROM Trip T " \
-                                             "WHERE T.StartLocationName =\'" + startLocationName + "\' " \
-                                                                                                   "AND T.DestinationName=\'" + DestinationName + "\');"
+    SQL_Query = "DELETE FROM TripOffering " \
+                "WHERE TripNumber =\'"+TripNumber+"\' AND Date=\'"+Date+"\' AND ScheduledStartTime=\'"+ScheduledStartTime+"\';"
     cur.execute(SQL_Query)
 
 
