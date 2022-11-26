@@ -52,18 +52,37 @@ def addTripOfferings():
         if len(data) == 0:
             missingTrips.append(tripNumber)
 
-    if missingTrips:
-        print("Cannot add some or all trip offerings. In the parent table \'Trip\', trips with the trip numbers: \n" + str(missingTrips) + " are missing.")
-        choice = input("\nWould you like to add those Trips or cancel this action?\n"
+    # get all possible new drivers and check if they don't already exist in the parent table
+    possibleDriverNames = [x['DriverName'] for x in setOfTripOfferings]
+    missingDrivers = []
+    for driver in possibleDriverNames:
+        cur.execute("SELECT * FROM Driver D WHERE D.DriverName = \'" + driver + "\'")
+        data = cur.fetchall()
+        if len(data) == 0:
+            missingDrivers.append(driver)
+
+
+    # get all possible new busID's and check if they don't already exist in the parent table
+    possibleBusIDs = [x['BusID'] for x in setOfTripOfferings]
+    missingBusIDs = []
+    for b in possibleBusIDs:
+        cur.execute("SELECT * FROM Bus B WHERE B.BusID = " + b)
+        data = cur.fetchall()
+        if len(data) == 0:
+            missingBusIDs.append(b)
+
+    if missingDrivers or missingBusIDs or missingTrips:
+        print("Cannot add some or all trip offerings. Values missing in parent tables.")
+        choice = input("\nWould you like to add those missing entries into the parent tables?\n"
                        "Enter 1 to add and 2 to cancel: ")
         while is_not_one_or_two(choice):
-            choice = input("Would you like to add those Trips or cancel this action?\n"
+            choice = input("\nWould you like to add those missing entries into the parent tables?\n"
                            "Enter 1 to add and 2 to cancel: ")
-
         if int(choice) == 2:
             return
 
-        #ask use for the information needed to add new trips
+    if missingTrips:
+        print("\nAdding missing trip numbers in parent table Trip\n")
         setOfTrips = []
         iterationTrips = {}
         for i in missingTrips:
@@ -71,8 +90,9 @@ def addTripOfferings():
             # PERHAPS WE CAN REMOVE THIS LINE?
             iterationTrips.clear()
             iterationTrips['TripNumber'] = int(i)
-            iterationTrips['StartLocationName'] = input("Enter the start location name for trip number "+i+": ")
-            iterationTrips['DestinationName'] = input("Enter the destination name for trip number "+i+": ")
+            iterationTrips['StartLocationName'] = input("Enter the start location name for new trip number "+i+": ")
+            iterationTrips['DestinationName'] = input("Enter the destination name for new trip number "+i+": ")
+            setOfTrips.append(iterationTrips)
 
         #Add in the new trips
         SQL_Insert = "INSERT INTO Trip (TripNumber, StartLocationName, DestinationName) " \
@@ -85,6 +105,63 @@ def addTripOfferings():
 
     input("New Trips have been added. Press Enter to continue...")
 
+
+    if missingDrivers:
+        print("\nAdding missing drivers in parent table Driver\n")
+        setOfDrivers = []
+        iterationDrivers = {}
+        for i in missingDrivers:
+            print("\n")
+            # PERHAPS WE CAN REMOVE THIS LINE?
+            iterationDrivers.clear()
+            iterationDrivers['DriverName'] = i
+            DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + " : ")
+            cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
+            while is_not_integer(cleanedNumber):
+                DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + " : ")
+                cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
+            iterationDrivers['DriverTelephoneNumber'] = cleanedNumber
+            setOfDrivers.append(iterationDrivers)
+
+
+        #Add in the new drivers
+        SQL_Insert ="INSERT INTO Driver (DriverName, DriverTelephoneNumber) " \
+                    "VALUES "
+        for dr in setOfDrivers:
+            SQL_Insert += "(\'" + dr.get('DriverName') + "\'," + dr.get('DriverTelephoneNumber') + "),"
+        SQL_Insert = SQL_Insert[:-1] + ";"
+        cur.execute(SQL_Insert)
+        databaseConnection.commit()
+
+    input("New drivers have been added. Press Enter to continue...")
+
+
+    if missingBusIDs:
+        print("\nAdding missing buses in parent table Bus\n")
+        setOfBuses = []
+        iterationBus = {}
+        for i in missingBusIDs:
+            print("\n")
+            iterationBus.clear()
+            iterationBus['BusID'] = int(i)
+            iterationBus['Model'] = input("Enter a model for the new bus #"+i+" :")
+            year = input("Enter the year for the new bus #"+i+" :")
+            while is_not_integer(year):
+                year = input("Enter the year for the new bus #"+i+" :")
+            iterationBus['Year'] = year
+            setOfBuses.append(iterationBus)
+
+        #Add in the new buses
+        SQL_Insert ="INSERT INTO Bus (BusID, Model, Year) " \
+                    "VALUES "
+        for bus in setOfBuses:
+            SQL_Insert += "(" + bus.get('BusID') + ",\'" + bus.get('Model') + "\'," + bus.get('Year') + "),"
+        SQL_Insert = SQL_Insert[:-1] + ";"
+        cur.execute(SQL_Insert)
+        databaseConnection.commit()
+
+    input("New buses have been added. Press Enter to continue...")
+
     #now add in those trip offerings
     SQL_Insert = "INSERT INTO TripOffering (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime, DriverName, BusID) " \
                     "VALUES "
@@ -96,7 +173,7 @@ def addTripOfferings():
     cur.execute(SQL_Insert)
     databaseConnection.commit()
 
-    input("New Trip Offerings have also been added. Press Enter to return to edit schedule menu...")
+    input("All New Trip Offerings have also been added. Press Enter to return to edit schedule menu...")
 
 
 
@@ -133,7 +210,7 @@ def changeDriver():
 
         #Add in the new driver
         SQL_Insert = "INSERT INTO Driver (DriverName, DriverTelephoneNumber) " \
-                    "VALUES (\'" + DriverName + "\'," + DriverTelephoneNumber +");"
+                    "VALUES (\'" + DriverName + "\'," + cleanedNumber +");"
         cur.execute(SQL_Insert)
         databaseConnection.commit()
 
