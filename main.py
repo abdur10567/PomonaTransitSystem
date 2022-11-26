@@ -1,6 +1,7 @@
 import sqlite3
 from consolemenu import *
 from consolemenu.items import *
+from convenienecFunctions import *
 
 databaseConnection = sqlite3.connect('test.db', check_same_thread=False)
 cur = databaseConnection.cursor()
@@ -60,7 +61,7 @@ def initializeDatabase():
                 "NumberOfPassengerOut integer,"
                 "PRIMARY KEY (TripNumber, Date, ScheduledStartTime, StopNumber),"
                 "FOREIGN KEY (TripNumber) REFERENCES Trip (TripNumber),"
-                #"FOREIGN KEY (Date) REFERENCES TripOffering (Date),"
+                # "FOREIGN KEY (Date) REFERENCES TripOffering (Date),"
                 "FOREIGN KEY (ScheduledStartTime) REFERENCES TripOffering (ScheduledStartTime),"
                 "FOREIGN KEY (StopNumber) REFERENCES Stop (StopNumber),"
                 "FOREIGN KEY (ScheduledArrivalTime) REFERENCES TripOffering (ScheduledArrivalTime)"
@@ -95,17 +96,32 @@ def displaySchedule():
 
 
 def deleteTripOffering():
-    TripNumber = input("Enter a Trip Number: ")
+    TripNumber = int(input("Enter a Trip Number: "))
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
     ScheduledStartTime.lower()
     SQL_Query = "DELETE FROM TripOffering " \
-                "WHERE TripNumber =\'"+TripNumber+"\' AND Date=\'"+Date+"\' AND ScheduledStartTime=\'"+ScheduledStartTime+"\';"
+                "WHERE TripNumber =\'" + TripNumber + "\' AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
     cur.execute(SQL_Query)
 
 
-def addTripOffering():
-    print("option 2 lol")
+def addTripOfferings():
+    numberToAdd = input("How many Trip Offerings to add?: ")
+
+    while is_not_integer(numberToAdd):
+        numberToAdd = input("\nHow many Trip Offerings to add?: ")
+
+    i = 0
+    setOfTripOfferings = []
+    iterationTripOffering = {}
+    while i < numberToAdd:
+        print("\n")
+        iterationTripOffering.clear()
+        tripNUmber = input("Enter trip number for "+": ")
+        while is_not_integer(tripNUmber):
+            tripNUmber = input("How many Trip Offerings to add?: ")
+        iterationTripOffering['TripNumber']
+        i += 1
 
 
 def changeDriver():
@@ -123,17 +139,22 @@ def displayStops():
 def displayDriverSchedule():
     print("Display Driver schedule")
 
+
 def addDriver():
     print("Add a driver")
+
 
 def addBus():
     print("Add a Bus")
 
+
 def deleteBus():
     print("Delete a bus")
 
+
 def insertActualTrip():
     print("Insert Actual Trip")
+
 
 def main():
     # initialize our database and create its tables
@@ -170,7 +191,7 @@ def main():
     # WHAT DOES THE PROFESSOR WANT FOR THIS ONE?
     editScheduleOption2 = FunctionItem(
         "Add a set of trip offerings assuming the values of all attributes are given (the software"
-        " asks if you have more trips to enter)", addTripOffering)
+        " asks if you have more trips to enter)", addTripOfferings)
 
     editScheduleOption3 = FunctionItem("Change the driver for a given Trip Offering.", changeDriver)
     editScheduleOption4 = FunctionItem("Change the bus for a given Trip Offering.", changeBus)
