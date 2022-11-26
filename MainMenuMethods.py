@@ -34,16 +34,41 @@ def displayStops():
     print(output)
 
 
+#Ask professor about this one?
 def displayDriverSchedule():
     print("Display Driver schedule")
 
 
 def addDriver():
-    print("Add a driver")
+    DriverName = input("Enter the new driver name: ")
+    DriverName.lower()
+    DriverTelephoneNumber = input("Enter a telephone number for the new driver: ")
+    cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
+    while is_not_integer(cleanedNumber):
+        DriverTelephoneNumber = input("Enter a telephone number for the new driver: ")
+        cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
+
+    # Add in the new driver
+    SQL_Insert = "INSERT INTO Driver (DriverName, DriverTelephoneNumber) " \
+                 "VALUES (\'" + DriverName + "\'," + DriverTelephoneNumber + ");"
+    cur.execute(SQL_Insert)
+    databaseConnection.commit()
 
 
 def addBus():
-    print("Add a Bus")
+    BusID = input("Enter the new BusID: ")
+    while is_not_integer(BusID):
+        BusID = input("Enter the new BusID: ")
+    model = input("Enter the model of the bus: ")
+    year = input("Enter the year of the bus: ")
+    while is_not_integer(year):
+        year = input("Enter the year of the bus: ")
+
+    # Add in the new bus
+    SQL_Insert = "INSERT INTO Bus (BusID,Model,Year) " \
+                 "VALUES (" + BusID + ",\'" + model + "\'," + year + ");"
+    cur.execute(SQL_Insert)
+    databaseConnection.commit()
 
 
 def deleteBus():
