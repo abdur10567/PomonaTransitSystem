@@ -113,11 +113,11 @@ def changeDriver():
     cur.execute("SELECT * FROM Driver D WHERE D.DriverName = \'" + DriverName + "\'" )
     data = cur.fetchall()
     if len(data) == 0:
-        print("Cannot change driver for trip offering. In the parent table \'Driver\', the driver name: \n" + DriverName + " is missing.")
-        choice = input("\nWould you like to add that driver or cancel this action?\n"
+        print("Cannot change driver for the given trip offering. In the parent table \'Driver\', the driver name: " + DriverName + " is missing.")
+        choice = input("\nWould you like to add that driver to the parent table or cancel this action?\n"
                        "Enter 1 to add and 2 to cancel: ")
         while is_not_one_or_two(choice):
-            choice = input("\nWould you like to add that driver or cancel this action?\n"
+            choice = input("\nWould you like to add that driver to the parent table or cancel this action?\n"
                            "Enter 1 to add and 2 to cancel: ")
 
         #Drop out if user chooses to cancel action
@@ -142,8 +142,46 @@ def changeDriver():
     cur.execute(SQL_Update)
     databaseConnection.commit()
 
-
-
-
 def changeBus():
-    print("option 4 lol")
+    TripNumber = input("Enter a Trip Number: ")
+    while is_not_integer(TripNumber):
+        TripNumber = input("Enter a Trip Number: ")
+    Date = input("Enter a date in YYYY-MM-DD format: ")
+    ScheduledStartTime = input("Enter the scheduled start time: ")
+    ScheduledStartTime.lower()
+    BusID = input("Enter the new BusID: ")
+    while is_not_integer(BusID):
+        BusID = input("Enter the new BusID: ")
+
+    # first check if the new BusID name exists within the parent table Bus
+    cur.execute("SELECT * FROM Bus B WHERE B.BusID = " + BusID)
+    data = cur.fetchall()
+    if len(data) == 0:
+        print(
+            "Cannot change bus for the given trip offering. In the parent table \'Bus\', the BusID: " + BusID + " is missing.")
+        choice = input("\nWould you like to add that Bus to the parent table or cancel this action?\n"
+                       "Enter 1 to add and 2 to cancel: ")
+        while is_not_one_or_two(choice):
+            choice = input("\nWould you like to add that Bus to the parent table or cancel this action?\n"
+                           "Enter 1 to add and 2 to cancel: ")
+
+        # Drop out if user chooses to cancel action
+        if int(choice) == 2:
+            return
+
+        model = input("Enter the model of the bus: ")
+        year = input("Enter the year of the bus: ")
+        while is_not_integer(year):
+            year = input("Enter the year of the bus: ")
+
+        # Add in the new bus
+        SQL_Insert = "INSERT INTO Bus (BusID,Model,Year) " \
+                     "VALUES (" + BusID + ",\'" + model + "\',"+year+");"
+        cur.execute(SQL_Insert)
+        databaseConnection.commit()
+
+    SQL_Update = "UPDATE TripOffering T SET T.BusID = " + BusID + "" \
+                 "WHERE T.TripNumber = " + TripNumber + " AND T.Date = \'" + Date + "\' AND T.ScheduledStartTime =\'" + ScheduledStartTime + "\'"
+
+    cur.execute(SQL_Update)
+    databaseConnection.commit()
