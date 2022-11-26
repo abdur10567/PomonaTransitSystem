@@ -1,7 +1,7 @@
 import sqlite3
 from consolemenu import *
 from consolemenu.items import *
-from convenienecFunctions import *
+from convenienceFunctions import is_not_integer, make_ordinal, is_not_one_or_two
 
 databaseConnection = sqlite3.connect('test.db', check_same_thread=False)
 cur = databaseConnection.cursor()
@@ -96,12 +96,14 @@ def displaySchedule():
 
 
 def deleteTripOffering():
-    TripNumber = int(input("Enter a Trip Number: "))
+    TripNumber = input("Enter a Trip Number: ")
+    while is_not_integer(TripNumber):
+        TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
     ScheduledStartTime.lower()
     SQL_Query = "DELETE FROM TripOffering " \
-                "WHERE TripNumber =\'" + TripNumber + "\' AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
+                "WHERE TripNumber =" + TripNumber + " AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
     cur.execute(SQL_Query)
 
 
@@ -111,17 +113,83 @@ def addTripOfferings():
     while is_not_integer(numberToAdd):
         numberToAdd = input("\nHow many Trip Offerings to add?: ")
 
-    i = 0
+    numberToAdd = int(numberToAdd)
+    i = 1
     setOfTripOfferings = []
     iterationTripOffering = {}
-    while i < numberToAdd:
+    while i <= numberToAdd:
         print("\n")
+        #PERHAPS WE CAN REMOVE THIS LINE?
         iterationTripOffering.clear()
-        tripNUmber = input("Enter trip number for "+": ")
-        while is_not_integer(tripNUmber):
-            tripNUmber = input("How many Trip Offerings to add?: ")
-        iterationTripOffering['TripNumber']
+        tripNumber = input("Enter trip number for "+make_ordinal(i)+" trip offering: ")
+        while is_not_integer(tripNumber):
+            tripNumber = input("Enter trip number for "+make_ordinal(i)+" trip offering: ")
+        iterationTripOffering['TripNumber'] = tripNumber
+        iterationTripOffering['Date'] = input("Enter the date for "+make_ordinal(i)+" trip offering in YYYY-MM-DD format: ")
+        iterationTripOffering['ScheduledStartTime'] = input("Enter the Scheduled Start Time for "+make_ordinal(i)+" trip offering: ")
+        iterationTripOffering['ScheduledArrivalTime'] = input("Enter the Scheduled Arrival Time for "+make_ordinal(i)+" trip offering: ")
+        iterationTripOffering['DriverName'] = input("Enter the driver name for "+make_ordinal(i)+" trip offering: ")
+        busID = input("Enter the BusID for "+make_ordinal(i)+" trip offering: ")
+        while is_not_integer(busID):
+            busID = input("Enter the BusID for " + make_ordinal(i) + " trip offering: ")
+        iterationTripOffering['BusID'] = busID
+        setOfTripOfferings.append(iterationTripOffering)
         i += 1
+
+    #get all possible new trip numbers and check if they don't already exist in the parent table
+    possibleTripNumbers = [x['TripNumber'] for x in setOfTripOfferings]
+    missingTrips = []
+    for tripNumber in possibleTripNumbers:
+        cur.execute("SELECT * FROM Trip T WHERE T.TripNumber = "+ str(tripNumber))
+        data = cur.fetchall()
+        if len(data) == 0:
+            missingTrips.append(tripNumber)
+
+    if missingTrips:
+        print("Cannot add some or all trip offerings. In the parent table \'Trip\', trips with the trip numbers: \n" + str(missingTrips) + " are missing.")
+        choice = input("\nWould you like to add those Trips or cancel this action?\n"
+                       "Enter 1 to add and 2 to cancel: ")
+        while is_not_one_or_two(choice):
+            choice = input("Would you like to add those Trips or cancel this action?\n"
+                           "Enter 1 to add and 2 to cancel: ")
+
+        if int(choice) == 2:
+            return
+
+        #ask use for the information needed to add new trips
+        setOfTrips = []
+        iterationTrips = {}
+        for i in missingTrips:
+            print("\n")
+            # PERHAPS WE CAN REMOVE THIS LINE?
+            iterationTrips.clear()
+            iterationTrips['TripNumber'] = int(i)
+            iterationTrips['StartLocationName'] = input("Enter the start location name for trip number "+i+": ")
+            iterationTrips['DestinationName'] = input("Enter the destination name for trip number "+i+": ")
+
+        #Add in the new trips
+        SQL_Query = "INSERT INTO Trip (TripNumber, StartLocationName, DestinationName) " \
+                    "VALUES "
+        for trip in setOfTrips:
+            SQL_Query += "(" + trip.get('TripNumber') + "," + trip.get('StartLocationName') + "," + trip.get('DestinationName') + "),"
+        SQL_Query = SQL_Query[:-1] + ";"
+        cur.execute(SQL_Query)
+
+    input("New Trips have been added. Press Enter to continue...")
+
+    #now add in those trip offerings
+    SQL_Query = "INSERT INTO TripOffering (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime, DriverName, BusID) " \
+                    "VALUES "
+    for tripOffering in setOfTripOfferings:
+        SQL_Query += "("+tripOffering.get('TripNumber')+","+tripOffering.get('Date')+","+tripOffering.get('ScheduledStartTime')+"," \
+                        ""+tripOffering.get('ScheduledArrivalTime') + ","+tripOffering.get('DriverName')+","+tripOffering.get('BusID')+"),"
+
+    SQL_Query = SQL_Query[:-1] + ";"
+    cur.execute(SQL_Query)
+
+    input("New Trip Offerings have also been added. Press Enter to return to edit schedule menu...")
+
+
 
 
 def changeDriver():

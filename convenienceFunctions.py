@@ -1,11 +1,22 @@
-
+# These functions are from stack overflow
 
 def is_not_integer(x):
-    try:
-        int(x)
+    if x.isdigit() and int(x) > 0:
         return False
-    except ValueError:
-        print('Please enter an integer.')
+    else:
+        print('Please enter a positive integer greater than 0.')
+        return True
+
+
+def is_not_one_or_two(x):
+    try:
+        x = int(x)
+        if x == 1 or x == 2:
+            return False
+        else:
+            return True
+    except:
+        print('Please enter 1 or 2.')
         return True
 
 
