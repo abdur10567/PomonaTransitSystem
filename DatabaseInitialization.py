@@ -10,6 +10,7 @@ def initializeDatabase():
                 "PRIMARY KEY (TripNumber)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS TripOffering ("
                 "TripNumber integer NOT NULL,"
                 "Date text NOT NULL,"
@@ -23,6 +24,7 @@ def initializeDatabase():
                 "FOREIGN KEY (DriverName) REFERENCES Driver (DriverName)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS Bus ("
                 "BusID integer NOT NULL,"
                 "Model text,"
@@ -30,18 +32,21 @@ def initializeDatabase():
                 "PRIMARY KEY (BusID)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS Driver ("
                 "DriverName text NOT NULL,"
                 "DriverTelephoneNumber integer,"
                 "PRIMARY KEY (DriverName)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS Stop ("
                 "StopNumber integer NOT NULL,"
                 "StopAddress text,"
                 "PRIMARY KEY (StopNumber)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS ActualTripStopInfo ("
                 "TripNumber integer NOT NULL,"
                 "Date text NOT NULL,"
@@ -54,17 +59,20 @@ def initializeDatabase():
                 "NumberOfPassengerOut integer,"
                 "PRIMARY KEY (TripNumber, Date, ScheduledStartTime, StopNumber),"
                 "FOREIGN KEY (TripNumber) REFERENCES Trip (TripNumber),"
-                # "FOREIGN KEY (Date) REFERENCES TripOffering (Date),"
+                "FOREIGN KEY (Date) REFERENCES TripOffering (Date),"
                 "FOREIGN KEY (ScheduledStartTime) REFERENCES TripOffering (ScheduledStartTime),"
                 "FOREIGN KEY (StopNumber) REFERENCES Stop (StopNumber),"
                 "FOREIGN KEY (ScheduledArrivalTime) REFERENCES TripOffering (ScheduledArrivalTime)"
                 ");")
     databaseConnection.commit()
+
     cur.execute("CREATE TABLE IF NOT EXISTS TripStopInfo ("
                 "TripNumber integer NOT NULL,"
                 "StopNumber integer NOT NULL,"
                 "SequenceNumber integer,"
                 "DrivingTime text,"
                 "PRIMARY KEY (TripNumber, StopNumber)"
+                "FOREIGN KEY (TripNumber) REFERENCES Trip (TripNumber),"
+                "FOREIGN KEY (StopNumber) REFERENCES Stop (StopNumber)"
                 ");")
     databaseConnection.commit()

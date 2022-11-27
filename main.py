@@ -31,7 +31,7 @@ def main():
         "Delete a bus.", deleteBus)
 
     function_item7 = FunctionItem(
-        "Insert data for an actual trip specified by its key.", insertActualTrip)
+        "Record data for an actual trip offering.", insertActualTrip)
 
     editScheduleSubmenu = ConsoleMenu("Edit Schedules")
     editScheduleOption1 = FunctionItem("Delete a trip offering by TripNumber, Date, and Scheduled Start Time.",

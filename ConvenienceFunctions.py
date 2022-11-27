@@ -1,12 +1,18 @@
 # These functions are from stack overflow
 
-def is_not_integer(x):
+def is_not_integer_or_zero(x):
     if x.isdigit() and int(x) > 0:
         return False
     else:
         print('Please enter a positive integer greater than 0.')
         return True
 
+def is_not_integer(x):
+    if x.isdigit():
+        return False
+    else:
+        print('Please enter a positive integer.')
+        return True
 
 def is_not_one_or_two(x):
     try:

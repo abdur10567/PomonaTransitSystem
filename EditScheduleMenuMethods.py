@@ -1,9 +1,9 @@
 from DatabaseConnection import databaseConnection, cur
-from ConvenienceFunctions import is_not_integer, make_ordinal, is_not_one_or_two
+from ConvenienceFunctions import is_not_integer_or_zero, make_ordinal, is_not_one_or_two
 
 def deleteTripOffering():
     TripNumber = input("Enter a Trip Number: ")
-    while is_not_integer(TripNumber):
+    while is_not_integer_or_zero(TripNumber):
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
@@ -17,7 +17,7 @@ def deleteTripOffering():
 def addTripOfferings():
     numberToAdd = input("How many Trip Offerings to add?: ")
 
-    while is_not_integer(numberToAdd):
+    while is_not_integer_or_zero(numberToAdd):
         numberToAdd = input("\nHow many Trip Offerings to add?: ")
 
     numberToAdd = int(numberToAdd)
@@ -29,7 +29,7 @@ def addTripOfferings():
         #PERHAPS WE CAN REMOVE THIS LINE?
         iterationTripOffering.clear()
         tripNumber = input("Enter trip number for "+make_ordinal(i)+" trip offering: ")
-        while is_not_integer(tripNumber):
+        while is_not_integer_or_zero(tripNumber):
             tripNumber = input("Enter trip number for "+make_ordinal(i)+" trip offering: ")
         iterationTripOffering['TripNumber'] = tripNumber
         iterationTripOffering['Date'] = input("Enter the date for "+make_ordinal(i)+" trip offering in YYYY-MM-DD format: ")
@@ -37,7 +37,7 @@ def addTripOfferings():
         iterationTripOffering['ScheduledArrivalTime'] = input("Enter the Scheduled Arrival Time for "+make_ordinal(i)+" trip offering: ")
         iterationTripOffering['DriverName'] = input("Enter the driver name for "+make_ordinal(i)+" trip offering: ")
         busID = input("Enter the BusID for "+make_ordinal(i)+" trip offering: ")
-        while is_not_integer(busID):
+        while is_not_integer_or_zero(busID):
             busID = input("Enter the BusID for " + make_ordinal(i) + " trip offering: ")
         iterationTripOffering['BusID'] = busID
         setOfTripOfferings.append(iterationTripOffering)
@@ -115,10 +115,10 @@ def addTripOfferings():
             # PERHAPS WE CAN REMOVE THIS LINE?
             iterationDrivers.clear()
             iterationDrivers['DriverName'] = i
-            DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + " : ")
+            DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + ": ")
             cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
-            while is_not_integer(cleanedNumber):
-                DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + " : ")
+            while is_not_integer_or_zero(cleanedNumber):
+                DriverTelephoneNumber = input("Enter a telephone number for the new driver " + i + ": ")
                 cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
             iterationDrivers['DriverTelephoneNumber'] = cleanedNumber
             setOfDrivers.append(iterationDrivers)
@@ -144,10 +144,10 @@ def addTripOfferings():
             print("\n")
             iterationBus.clear()
             iterationBus['BusID'] = int(i)
-            iterationBus['Model'] = input("Enter a model for the new bus #"+i+" :")
-            year = input("Enter the year for the new bus #"+i+" :")
-            while is_not_integer(year):
-                year = input("Enter the year for the new bus #"+i+" :")
+            iterationBus['Model'] = input("Enter a model for the new bus #"+i+":")
+            year = input("Enter the year for the new bus #"+i+":")
+            while is_not_integer_or_zero(year):
+                year = input("Enter the year for the new bus #"+i+":")
             iterationBus['Year'] = year
             setOfBuses.append(iterationBus)
 
@@ -179,7 +179,7 @@ def addTripOfferings():
 
 def changeDriver():
     TripNumber = input("Enter a Trip Number: ")
-    while is_not_integer(TripNumber):
+    while is_not_integer_or_zero(TripNumber):
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
@@ -204,7 +204,7 @@ def changeDriver():
 
         DriverTelephoneNumber = input("Enter a telephone number for the new driver: ")
         cleanedNumber = re.sub('[^0-9]','', DriverTelephoneNumber)
-        while is_not_integer(cleanedNumber):
+        while is_not_integer_or_zero(cleanedNumber):
             DriverTelephoneNumber = input("Enter a telephone number for the new driver: ")
             cleanedNumber = re.sub('[^0-9]', '', DriverTelephoneNumber)
 
@@ -222,13 +222,13 @@ def changeDriver():
 
 def changeBus():
     TripNumber = input("Enter a Trip Number: ")
-    while is_not_integer(TripNumber):
+    while is_not_integer_or_zero(TripNumber):
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
     ScheduledStartTime.lower()
     BusID = input("Enter the new BusID: ")
-    while is_not_integer(BusID):
+    while is_not_integer_or_zero(BusID):
         BusID = input("Enter the new BusID: ")
 
     # first check if the new BusID name exists within the parent table Bus
@@ -249,7 +249,7 @@ def changeBus():
 
         model = input("Enter the model of the bus: ")
         year = input("Enter the year of the bus: ")
-        while is_not_integer(year):
+        while is_not_integer_or_zero(year):
             year = input("Enter the year of the bus: ")
 
         # Add in the new bus
