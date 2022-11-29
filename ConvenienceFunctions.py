@@ -1,4 +1,5 @@
 # These functions are from stack overflow
+from datetime import datetime, timedelta
 
 def is_not_integer_or_zero(x):
     if x.isdigit() and int(x) > 0:
@@ -41,3 +42,13 @@ def make_ordinal(n):
     else:
         suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
     return str(n) + suffix
+
+
+#gets start and end of a week given some date
+def week_magic(day):
+    dt = datetime.strptime(day, '%Y-%m-%d')
+    start = dt - timedelta(days=(dt.weekday()+1))
+    end = start + timedelta(days=6)
+    start = start.date()
+    end = end.date()
+    return start, end

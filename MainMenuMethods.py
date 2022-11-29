@@ -1,5 +1,5 @@
 from DatabaseConnection import databaseConnection, cur
-from ConvenienceFunctions import is_not_integer_or_zero, make_ordinal, is_not_one_or_two, is_not_integer
+from ConvenienceFunctions import is_not_integer_or_zero, make_ordinal, is_not_one_or_two, is_not_integer, week_magic
 
 
 def displaySchedule():
@@ -36,7 +36,16 @@ def displayStops():
 
 #Ask professor about this one?
 def displayDriverSchedule():
-    print("Display Driver schedule")
+    DriverName = input("Enter the driver name: ")
+    DriverName.lower()
+    Date = input("Enter a date in YYYY-MM-DD format: ")
+    startOfWeek, endOfWeek = week_magic(Date)
+    SQL_Query = "SELECT * FROM TripOffering T WHERE T.DriverName = \'" + DriverName + "\' AND T.Date >= \'" + startOfWeek + "\' AND T.Date <= \'" + endOfWeek + "\'"
+    cur.execute(SQL_Query)
+    output = cur.fetchall()
+    for row in output:
+        print(row)
+
 
 
 def addDriver():
