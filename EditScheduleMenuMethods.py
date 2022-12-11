@@ -1,3 +1,4 @@
+import re
 from DatabaseConnection import databaseConnection, cur
 from ConvenienceFunctions import is_not_integer_or_zero, make_ordinal, is_not_one_or_two
 
@@ -7,11 +8,12 @@ def deleteTripOffering():
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
-    ScheduledStartTime.lower()
     SQL_Delete = "DELETE FROM TripOffering " \
                  "WHERE TripNumber =" + TripNumber + " AND Date=\'" + Date + "\' AND ScheduledStartTime=\'" + ScheduledStartTime + "\';"
     cur.execute(SQL_Delete)
     databaseConnection.commit()
+    print("\nTrip Offering Deleted.")
+    input("Press enter to return to the Edit Schedule Menu...")
 
 
 def addTripOfferings():
@@ -82,7 +84,7 @@ def addTripOfferings():
             return
 
     if missingTrips:
-        print("\nAdding missing trip numbers in parent table Trip\n")
+        print("\nAdding missing trip numbers in parent table Trip")
         setOfTrips = []
         iterationTrips = {}
         for i in missingTrips:
@@ -98,16 +100,15 @@ def addTripOfferings():
         SQL_Insert = "INSERT INTO Trip (TripNumber, StartLocationName, DestinationName) " \
                     "VALUES "
         for trip in setOfTrips:
-            SQL_Insert += "(" + trip.get('TripNumber') + ",\'" + trip.get('StartLocationName') + "\',\'" + trip.get('DestinationName') + "\'),"
+            SQL_Insert += "(" + str(trip.get('TripNumber')) + ",\'" + trip.get('StartLocationName') + "\',\'" + trip.get('DestinationName') + "\'),"
         SQL_Insert = SQL_Insert[:-1] + ";"
         cur.execute(SQL_Insert)
         databaseConnection.commit()
-
-    input("New Trips have been added. Press Enter to continue...")
+        input("New Trips have been added. Press Enter to continue...")
 
 
     if missingDrivers:
-        print("\nAdding missing drivers in parent table Driver\n")
+        print("\nAdding missing drivers in parent table Driver")
         setOfDrivers = []
         iterationDrivers = {}
         for i in missingDrivers:
@@ -132,12 +133,11 @@ def addTripOfferings():
         SQL_Insert = SQL_Insert[:-1] + ";"
         cur.execute(SQL_Insert)
         databaseConnection.commit()
-
-    input("New drivers have been added. Press Enter to continue...")
+        input("New drivers have been added. Press Enter to continue...")
 
 
     if missingBusIDs:
-        print("\nAdding missing buses in parent table Bus\n")
+        print("\nAdding missing buses in parent table Bus")
         setOfBuses = []
         iterationBus = {}
         for i in missingBusIDs:
@@ -155,12 +155,11 @@ def addTripOfferings():
         SQL_Insert ="INSERT INTO Bus (BusID, Model, Year) " \
                     "VALUES "
         for bus in setOfBuses:
-            SQL_Insert += "(" + bus.get('BusID') + ",\'" + bus.get('Model') + "\'," + bus.get('Year') + "),"
+            SQL_Insert += "(" + str(bus.get('BusID')) + ",\'" + bus.get('Model') + "\'," + bus.get('Year') + "),"
         SQL_Insert = SQL_Insert[:-1] + ";"
         cur.execute(SQL_Insert)
         databaseConnection.commit()
-
-    input("New buses have been added. Press Enter to continue...")
+        input("New buses have been added. Press Enter to continue...")
 
     #now add in those trip offerings
     SQL_Insert = "INSERT INTO TripOffering (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime, DriverName, BusID) " \
@@ -183,9 +182,15 @@ def changeDriver():
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
-    ScheduledStartTime.lower()
     DriverName = input("Enter the new driver name: ")
-    DriverName.lower()
+
+
+    cur.execute("SELECT * FROM TripOffering T Where T.TripNumber = " + TripNumber + " AND T.Date = \'" +Date+"\' AND T.ScheduledStartTime = \'" +ScheduledStartTime+"\'")
+    data = cur.fetchall()
+    if len(data) == 0:
+        print("No such Trip Offering.")
+        input("Press Enter to return to edit schedule menu and try again...")
+        return
 
     #first check if the new driver name exists within the parent table Driver
     cur.execute("SELECT * FROM Driver D WHERE D.DriverName = \'" + DriverName + "\'" )
@@ -213,12 +218,14 @@ def changeDriver():
                     "VALUES (\'" + DriverName + "\'," + cleanedNumber +");"
         cur.execute(SQL_Insert)
         databaseConnection.commit()
+        input("New driver has been added. Press Enter to continue...")
 
-    SQL_Update = "UPDATE TripOffering T SET T.DriverName = \'" +DriverName+"\'" \
-                 "WHERE T.TripNumber = "+TripNumber+" AND T.Date = \'" + Date + "\' AND T.ScheduledStartTime =\'" + ScheduledStartTime + "\'"
+    SQL_Update = "UPDATE TripOffering SET DriverName = \'" +DriverName+"\'" \
+                 "WHERE TripNumber = "+TripNumber+" AND Date = \'" + Date + "\' AND ScheduledStartTime =\'" + ScheduledStartTime + "\'"
 
     cur.execute(SQL_Update)
     databaseConnection.commit()
+    input("Driver has been changed for this trip offering. Press Enter to return to edit schedule menu...")
 
 def changeBus():
     TripNumber = input("Enter a Trip Number: ")
@@ -226,10 +233,17 @@ def changeBus():
         TripNumber = input("Enter a Trip Number: ")
     Date = input("Enter a date in YYYY-MM-DD format: ")
     ScheduledStartTime = input("Enter the scheduled start time: ")
-    ScheduledStartTime.lower()
     BusID = input("Enter the new BusID: ")
     while is_not_integer_or_zero(BusID):
         BusID = input("Enter the new BusID: ")
+
+
+    cur.execute("SELECT * FROM TripOffering T Where T.TripNumber = " + TripNumber + " AND T.Date = \'" +Date+"\' AND T.ScheduledStartTime = \'" +ScheduledStartTime+"\'")
+    data = cur.fetchall()
+    if len(data) == 0:
+        print("No such Trip Offering.")
+        input("Press Enter to return to edit schedule menu and try again...")
+        return
 
     # first check if the new BusID name exists within the parent table Bus
     cur.execute("SELECT * FROM Bus B WHERE B.BusID = " + BusID)
@@ -258,8 +272,9 @@ def changeBus():
         cur.execute(SQL_Insert)
         databaseConnection.commit()
 
-    SQL_Update = "UPDATE TripOffering T SET T.BusID = " + BusID + "" \
-                 "WHERE T.TripNumber = " + TripNumber + " AND T.Date = \'" + Date + "\' AND T.ScheduledStartTime =\'" + ScheduledStartTime + "\'"
+    SQL_Update = "UPDATE TripOffering SET BusID = " + BusID + " " \
+                 "WHERE TripNumber = " + TripNumber + " AND Date = \'" + Date + "\' AND ScheduledStartTime =\'" + ScheduledStartTime + "\'"
 
     cur.execute(SQL_Update)
     databaseConnection.commit()
+    input("Bus has been changed for this trip offering. Press Enter to return to edit schedule menu...")

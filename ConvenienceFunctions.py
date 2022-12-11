@@ -46,7 +46,11 @@ def make_ordinal(n):
 
 #gets start and end of a week given some date
 def week_magic(day):
-    dt = datetime.strptime(day, '%Y-%m-%d')
+    try:
+        dt = datetime.strptime(day, '%Y-%m-%d')
+    except:
+        print("Improper date format.")
+        return None, None
     start = dt - timedelta(days=(dt.weekday()+1))
     end = start + timedelta(days=6)
     start = start.date()

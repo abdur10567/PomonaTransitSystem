@@ -1,14 +1,16 @@
-import re
 from consolemenu import *
 from consolemenu.items import *
 from EditScheduleMenuMethods import deleteTripOffering, addTripOfferings, changeDriver, changeBus
 from MainMenuMethods import displaySchedule, displayStops, displayDriverSchedule, addDriver, addBus, deleteBus, insertActualTrip
-from DatabaseInitialization import initializeDatabase
+from DatabaseInitialization import initializeDatabase, insertDummyData
 
 def main():
     # initialize our database and create its tables
     initializeDatabase()
-    print("Database initialized Successfully")
+    print("Database initialized successfully.")
+    insertDummyData()
+    print("Dummy data inserted successfully.")
+
 
     # create a menu with options
     menu = ConsoleMenu("Main Menu")
