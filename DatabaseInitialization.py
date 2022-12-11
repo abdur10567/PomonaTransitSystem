@@ -20,7 +20,7 @@ def initializeDatabase():
                 "BusID integer NOT NULL,"
                 "PRIMARY KEY (TripNumber, Date, ScheduledStartTime),"
                 "FOREIGN KEY (TripNumber) REFERENCES Trip (TripNumber),"
-                "FOREIGN KEY (BusID) REFERENCES Bus (BusID),"
+                "FOREIGN KEY (BusID) REFERENCES Bus (BusID) ON DELETE CASCADE,"
                 "FOREIGN KEY (DriverName) REFERENCES Driver (DriverName)"
                 ");")
     databaseConnection.commit()
@@ -58,11 +58,8 @@ def initializeDatabase():
                 "NumberOfPassengerIn integer,"
                 "NumberOfPassengerOut integer,"
                 "PRIMARY KEY (TripNumber, Date, ScheduledStartTime, StopNumber),"
-                "FOREIGN KEY (TripNumber) REFERENCES Trip (TripNumber),"
-                "FOREIGN KEY (Date) REFERENCES TripOffering (Date),"
-                "FOREIGN KEY (ScheduledStartTime) REFERENCES TripOffering (ScheduledStartTime),"
-                "FOREIGN KEY (StopNumber) REFERENCES Stop (StopNumber),"
-                "FOREIGN KEY (ScheduledArrivalTime) REFERENCES TripOffering (ScheduledArrivalTime)"
+                "FOREIGN KEY (TripNumber, Date, ScheduledStartTime) REFERENCES TripOffering (TripNumber, Date, ScheduledStartTime) ON DELETE CASCADE,"
+                "FOREIGN KEY (StopNumber) REFERENCES Stop (StopNumber) ON DELETE CASCADE"
                 ");")
     databaseConnection.commit()
 
@@ -131,6 +128,7 @@ def insertDummyData():
 
     SQL_Insert = "INSERT OR IGNORE INTO ActualTripStopInfo (TripNumber,Date,ScheduledStartTime,StopNumber,ScheduledArrivalTime,ActualStartTime,ActualArrivalTime,NumberOfPassengerIn,NumberOfPassengerOut) " \
                  "VALUES " \
+                 "(1,\"2022-05-11\",\"1:00 PM\",9,\"2:50 PM\",\"1:03 AM\",\"2:58 PM\",2,8)," \
                  "(1,\"2022-05-11\",\"11:00 AM\",17,\"12:30 PM\",\"11:03 AM\",\"12:28 PM\",6,2);"
     cur.execute(SQL_Insert)
     databaseConnection.commit()
